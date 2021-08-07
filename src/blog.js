@@ -3,39 +3,37 @@
  * @Author: Luke Z
  * @Date: 2021-08-07 22:28:05
  * @LastEditors: Luke Z
- * @LastEditTime: 2021-08-07 23:26:52
- * @FilePath: /node/src/blog.js
+ * @LastEditTime: 2021-08-07 23:36:08
+ * @Filereq.path: /node/src/blog.js
  */
 const handleBlogRouter = (req, res) => {
   const method = req.method;
-  const url = req.url;
-  const path = url.split("?")[0];
 
-  if (method === "GET" && path === "/api/blog/list") {
+  if (method === "GET" && req.path === "/api/blog/list") {
     return {
       msg: "Get Blog list",
     };
   }
 
-  if (method === "GET" && path === "/api/blog/detail") {
+  if (method === "GET" && req.path === "/api/blog/detail") {
     return {
       msg: "Get Blog detail",
     };
   }
 
-  if (method === "POST" && path === "/api/blog/new") {
+  if (method === "POST" && req.path === "/api/blog/new") {
     return {
       msg: "Post new Blog",
     };
   }
 
-  if (method === "POST" && path === "/api/blog/update") {
+  if (method === "POST" && req.path === "/api/blog/update") {
     return {
       msg: "Update new Blog",
     };
   }
 
-  if (method === "POST" && path === "/api/blog/delete") {
+  if (method === "POST" && req.path === "/api/blog/delete") {
     return {
       msg: "Delete new Blog",
     };
