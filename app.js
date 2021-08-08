@@ -6,12 +6,16 @@
  * @LastEditTime: 2021-08-07 23:35:46
  * @FilePath: /node/app.js
  */
-const handleBlogRouter = require("./src/blog");
-const handleUserRouter = require("./src/user");
+const handleBlogRouter = require("./src/router/blog");
+const handleUserRouter = require("./src/router/user");
+const qs = require("querystring");
+
 const serverHandler = (req, res) => {
   res.setHeader("Content-Type", "application/json");
   const url = req.url;
   req.path = url.split("?")[0];
+
+  req.query = qs.parse(url.split("?")[1]);
 
   const blogData = handleBlogRouter(req, res);
   if (blogData) {
