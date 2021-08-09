@@ -18,4 +18,24 @@ const getList = (author, keyword) => {
   ];
 };
 
-module.exports = { getList };
+const getDetail = (id) => {
+  //mock data
+  return {
+    id: 1,
+    title: "title 1",
+    content: "content 1",
+    createdTime: 1628433119227,
+    author: "author 1",
+  };
+};
+
+const newBlog = (data = {}) => {
+  // console.log("input data", data);
+  //title,content;
+  return {
+    title: "New",
+    id: "new Blog",
+  };
+};
+
+module.exports = { getList, getDetail, newBlog };

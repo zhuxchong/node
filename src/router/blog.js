@@ -7,7 +7,7 @@
  * @Filereq.path: /node/src/blog.js
 
 */
-const { getList } = require("../controller/blog");
+const { getList, getDetail, newBlog } = require("../controller/blog");
 const { SuccessModal, ErrorModal } = require("../module/resModule");
 
 const handleBlogRouter = (req, res) => {
@@ -21,15 +21,16 @@ const handleBlogRouter = (req, res) => {
   }
 
   if (method === "GET" && req.path === "/api/blog/detail") {
-    return {
-      msg: "Get Blog detail",
-    };
+    const id = req.query.id;
+    const data = getDetail(id);
+    return new SuccessModal(data);
   }
 
   if (method === "POST" && req.path === "/api/blog/new") {
-    return {
-      msg: "Post new Blog",
-    };
+    const blogData = req.body;
+
+    const data = newBlog(blogData);
+    return new SuccessModal(data);
   }
 
   if (method === "POST" && req.path === "/api/blog/update") {
