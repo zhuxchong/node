@@ -38,4 +38,18 @@ const newBlog = (data = {}) => {
   };
 };
 
-module.exports = { getList, getDetail, newBlog };
+const updateBlog = (id, data = {}) => {
+  return {
+    title: "update",
+    id: "update Blog",
+  };
+};
+
+const deleteBlog = (id) => {
+  return {
+    title: "delete",
+    id,
+  };
+};
+
+module.exports = { getList, getDetail, newBlog, updateBlog, deleteBlog };

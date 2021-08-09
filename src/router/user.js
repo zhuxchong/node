@@ -6,13 +6,23 @@
  * @LastEditTime: 2021-08-07 23:35:53
  * @FilePath: /node/src/user.js
  */
+const { login: loginCheck } = require("../controller/user");
+const { SuccessModal, ErrorModal } = require("../module/resModule");
+
 const handleUserRouter = (req, res) => {
   const method = req.method;
 
   if (method === "POST" && req.path === "/api/user/login") {
-    return {
-      msg: "Login",
-    };
+    const { username, password } = req.body;
+
+    const data = loginCheck(username, password);
+    console.log(username, password, data);
+    return new SuccessModal(data);
+    if (data) {
+      return new SuccessModal(data);
+    } else {
+      return new ErrorModal("failed");
+    }
   }
 };
 module.exports = handleUserRouter;
