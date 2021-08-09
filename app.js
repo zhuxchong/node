@@ -52,7 +52,7 @@ const serverHandler = (req, res) => {
     }
     const userData = handleUserRouter(req, res);
     if (userData) {
-      res.end(JSON.stringify(blogData));
+      res.end(JSON.stringify(userData));
       return;
     }
     //404

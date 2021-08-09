@@ -16,13 +16,13 @@ const handleUserRouter = (req, res) => {
     const { username, password } = req.body;
 
     const data = loginCheck(username, password);
-    console.log(username, password, data);
-    return new SuccessModal(data);
+
     if (data) {
       return new SuccessModal(data);
     } else {
       return new ErrorModal("failed");
     }
+    // return JSON.stringify({ test: 123 });
   }
 };
 module.exports = handleUserRouter;

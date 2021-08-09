@@ -51,7 +51,7 @@ const handleBlogRouter = (req, res) => {
   if (method === "POST" && req.path === "/api/blog/delete") {
     const data = deleteBlog(id);
     if (data) {
-      return new SuccessModal();
+      return new SuccessModal(data);
     } else {
       return new ErrorModal("failed");
     }
