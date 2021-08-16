@@ -23,7 +23,9 @@ const handleBlogRouter = (req, res) => {
     const author = req.query.author || "";
     const kw = req.query.keyword || "";
     const data = getList(author, kw);
-    return new SuccessModal(data);
+    return data.then((res) => {
+      return new SuccessModal(res);
+    });
   }
 
   if (method === "GET" && req.path === "/api/blog/detail") {

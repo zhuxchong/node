@@ -20,6 +20,7 @@ if (env === "prod") {
     database: "myblog",
   };
 }
+
 module.exports = {
   MYSQL_CONF,
 };

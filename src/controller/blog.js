@@ -1,21 +1,18 @@
+const { exec } = require("../db/mysql");
+
 const getList = (author, keyword) => {
   //mock data
-  return [
-    {
-      id: 1,
-      title: "title 1",
-      content: "content 1",
-      createdTime: 1628433119227,
-      author: "author 1",
-    },
-    {
-      id: 2,
-      title: "title 2",
-      content: "content 2",
-      createdTime: 1628433156483,
-      author: "author 2",
-    },
-  ];
+
+  let sql = `select * from blogs where 1=1 `;
+  if (author) {
+    sql += `and author='${author}'`;
+  }
+  if (keyword) {
+    sql += `and title like '%%${keyword}%%'`;
+  }
+  sql += `order by createtime desc`;
+
+  return exec(sql);
 };
 
 const getDetail = (id) => {
