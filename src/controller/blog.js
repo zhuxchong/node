@@ -16,37 +16,52 @@ const getList = (author, keyword) => {
 };
 
 const getDetail = (id) => {
-  //mock data
-  return {
-    id: 1,
-    title: "title 1",
-    content: "content 1",
-    createdTime: 1628433119227,
-    author: "author 1",
-  };
+  let sql = `select * from blogs where id='${id}' `;
+  return exec(sql).then((res) => {
+    return res[0];
+  });
 };
 
 const newBlog = (data = {}) => {
   // console.log("input data", data);
   //title,content;
-  return {
-    title: "New",
-    id: "new Blog",
-  };
+  const title = data.title;
+  const content = data.content;
+  const author = data.author;
+  const createTime = Date.now();
+  const sql = `insert into blogs (title,content,author,createtime) 
+  values('${title}','${content}','${author}','${createTime}');
+  `;
+  return exec(sql).then((insertData) => {
+    // console.log("insertData", insertData);
+    return {
+      id: insertData.insertId,
+    };
+  });
 };
 
 const updateBlog = (id, data = {}) => {
-  return {
-    title: "update",
-    id: "update Blog",
-  };
+  const title = data.title;
+  const content = data.content;
+  const sql = `update blogs set title='${title}' , content='${content}' where id=${id}
+  `;
+  return exec(sql).then((updateData) => {
+    if (updateData.affectedRows > 0) return true;
+    return false;
+  });
+  // return {
+  //   title: "update",
+  //   id: "update Blog",
+  // };
 };
 
-const deleteBlog = (id) => {
-  return {
-    title: "delete",
-    id,
-  };
+const deleteBlog = (id, author) => {
+  const sql = `delete from blogs where id=${id} and author='${author}'
+  `;
+  return exec(sql).then((updateData) => {
+    if (updateData.affectedRows > 0) return true;
+    return false;
+  });
 };
 
 module.exports = { getList, getDetail, newBlog, updateBlog, deleteBlog };

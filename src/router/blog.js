@@ -31,31 +31,56 @@ const handleBlogRouter = (req, res) => {
   if (method === "GET" && req.path === "/api/blog/detail") {
     const id = req.query.id;
     const data = getDetail(id);
-    return new SuccessModal(data);
+    if (data) {
+      return data.then((res) => {
+        return new SuccessModal(res);
+      });
+    }
   }
 
   if (method === "POST" && req.path === "/api/blog/new") {
     const blogData = req.body;
+    const author = "zhang3";
+    blogData.author = author;
     const data = newBlog(blogData);
-    return new SuccessModal(data);
+    if (data) {
+      return data.then((res) => {
+        return new SuccessModal(res);
+      });
+    }
+    // return new SuccessModal(data);
   }
 
   if (method === "POST" && req.path === "/api/blog/update") {
     const blogData = req.body;
     const data = updateBlog(id, blogData);
     if (data) {
-      return new SuccessModal(data);
-    } else {
-      return new ErrorModal("failed");
+      return data.then((res) => {
+        if (res) {
+          return new SuccessModal(res);
+        }
+        return new ErrorModal("failed");
+        //  return new SuccessModal(res);
+      });
     }
+    // if (data) {
+    //   return new SuccessModal(data);
+    // } else {
+    //   return new ErrorModal("failed");
+    // }
   }
 
   if (method === "POST" && req.path === "/api/blog/delete") {
-    const data = deleteBlog(id);
+    const author = "zhang3";
+    const data = deleteBlog(id, author);
     if (data) {
-      return new SuccessModal(data);
-    } else {
-      return new ErrorModal("failed");
+      return data.then((res) => {
+        if (res) {
+          return new SuccessModal(res);
+        }
+        return new ErrorModal("failed");
+        //  return new SuccessModal(res);
+      });
     }
   }
 };

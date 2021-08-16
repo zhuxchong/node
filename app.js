@@ -56,9 +56,14 @@ const serverHandler = (req, res) => {
       return;
     }
 
+    // const userData = handleUserRouter(req, res);
     const userData = handleUserRouter(req, res);
     if (userData) {
-      res.end(JSON.stringify(userData));
+      userData.then((userData) => {
+        if (userData) {
+          res.end(JSON.stringify(userData));
+        }
+      });
       return;
     }
     //404
