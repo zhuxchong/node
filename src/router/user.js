@@ -9,6 +9,12 @@
 const { login } = require("../controller/user");
 const { SuccessModal, ErrorModal } = require("../module/resModule");
 
+const getCookieExpires = () => {
+  const d = new Date();
+  d.setTime(d.getTime() + 24 * 60 * 60 * 1000);
+  return d.toGMTString();
+};
+
 const handleUserRouter = (req, response) => {
   const method = req.method;
 
@@ -20,7 +26,12 @@ const handleUserRouter = (req, response) => {
     if (data) {
       return data.then((res) => {
         if (res.username) {
-          response.setHeader("Set-Cookie", `username=${res.username}; path=/`);
+          response.setHeader(
+            "Set-Cookie",
+            `username=${
+              res.username
+            }; path=/; httpOnly; expires=${getCookieExpires()}`
+          );
           return new SuccessModal(res);
         }
         return new ErrorModal("failed");
