@@ -26,12 +26,15 @@ const handleUserRouter = (req, response) => {
     if (data) {
       return data.then((res) => {
         if (res.username) {
-          response.setHeader(
-            "Set-Cookie",
-            `username=${
-              res.username
-            }; path=/; httpOnly; expires=${getCookieExpires()}`
-          );
+          // response.setHeader(
+          //   "Set-Cookie",
+          //   `username=${
+          //     res.username
+          //   }; path=/; httpOnly; expires=${getCookieExpires()}`
+          // );
+          req.session.username = res.username;
+          req.session.realName = res.realname;
+          console.log("req session is", req.session);
           return new SuccessModal(res);
         }
         return new ErrorModal("failed");
@@ -40,11 +43,15 @@ const handleUserRouter = (req, response) => {
     }
     // return JSON.stringify({ test: 123 });
   }
-  // if (method === "GET" && req.path === "/api/user/login-test") {
-  //   if (req.cookie.username) {
-  //     return Promise.resolve(new SuccessModal());
-  //   }
-  //   return Promise.resolve(new ErrorModal("failed"));
-  // }
+  if (method === "GET" && req.path === "/api/user/login-test") {
+    if (req.session.username) {
+      return Promise.resolve(
+        new SuccessModal({
+          session: req.session.username,
+        })
+      );
+    }
+    return Promise.resolve(new ErrorModal("failed"));
+  }
 };
 module.exports = handleUserRouter;
