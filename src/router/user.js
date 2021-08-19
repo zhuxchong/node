@@ -6,20 +6,21 @@
  * @LastEditTime: 2021-08-07 23:35:53
  * @FilePath: /node/src/user.js
  */
-const { login: loginCheck } = require("../controller/user");
+const { login } = require("../controller/user");
 const { SuccessModal, ErrorModal } = require("../module/resModule");
 
-const handleUserRouter = (req, res) => {
+const handleUserRouter = (req, response) => {
   const method = req.method;
 
-  if (method === "POST" && req.path === "/api/user/login") {
-    const { username, password } = req.body;
+  if (method === "GET" && req.path === "/api/user/login") {
+    const { username, password } = req.query;
 
-    const data = loginCheck(username, password);
+    const data = login(username, password);
 
     if (data) {
       return data.then((res) => {
         if (res.username) {
+          response.setHeader("Set-Cookie", `username=${res.username}; path=/`);
           return new SuccessModal(res);
         }
         return new ErrorModal("failed");
@@ -28,5 +29,11 @@ const handleUserRouter = (req, res) => {
     }
     // return JSON.stringify({ test: 123 });
   }
+  // if (method === "GET" && req.path === "/api/user/login-test") {
+  //   if (req.cookie.username) {
+  //     return Promise.resolve(new SuccessModal());
+  //   }
+  //   return Promise.resolve(new ErrorModal("failed"));
+  // }
 };
 module.exports = handleUserRouter;

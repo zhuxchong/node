@@ -43,6 +43,16 @@ const serverHandler = (req, res) => {
 
   req.query = qs.parse(url.split("?")[1]);
   //handle Post
+  //handle cookie
+  req.cookie = {};
+  const cookieStr = req.headers.cookie || "";
+  cookieStr.split(";").forEach((item) => {
+    if (!item) {
+      return;
+    }
+    const [k, v] = item.split("=");
+    req.cookie[k] = v;
+  });
 
   getPostData(req).then((postData) => {
     req.body = postData;
