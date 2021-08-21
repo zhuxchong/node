@@ -15,8 +15,9 @@ const getCookieExpires = () => {
 const handleBlogRouter = require("./src/router/blog");
 const handleUserRouter = require("./src/router/user");
 const qs = require("querystring");
+const { get, set } = require("./src/db/redis");
 
-const SESSION_DATA = {};
+// const SESSION_DATA = {};
 
 const getPostData = (req) => {
   const promise = new Promise((res, rej) => {
@@ -64,55 +65,60 @@ const serverHandler = (req, res) => {
 
   let needSetCookie = false;
   let userId = req.cookie.userId;
-  if (userId) {
-    if (!SESSION_DATA[userId]) {
-      SESSION_DATA[userId] = {};
-    }
-  } else {
-    userId = `${Date.now()}_${Math.random()}`;
-    SESSION_DATA[userId] = {};
+  if (!userId) {
     needSetCookie = true;
+    userId = `${Date.now()}_${Math.random()}`;
+    set(userId, {});
   }
-  req.session = SESSION_DATA[userId];
+  req.sessionId = userId;
+  get(req.sessionId)
+    .then((sessionData) => {
+      if (sessionData == null) {
+        set(req.sessionId, {});
+        req.session = {};
+      }
+      req.session = sessionData;
+      console.log(" req.session", req.session);
+      return getPostData(req);
+    })
+    .then((postData) => {
+      req.body = postData;
+      const blogResult = handleBlogRouter(req, res);
+      if (blogResult) {
+        blogResult.then((blogData) => {
+          if (needSetCookie) {
+            res.setHeader(
+              "Set-Cookie",
+              `userId=${userId}; path=/; httpOnly; expires=${getCookieExpires()}`
+            );
+          }
+          if (blogData) {
+            res.end(JSON.stringify(blogData));
+          }
+        });
+        return;
+      }
 
-  getPostData(req).then((postData) => {
-    req.body = postData;
-    const blogResult = handleBlogRouter(req, res);
-    if (blogResult) {
-      blogResult.then((blogData) => {
-        if (needSetCookie) {
-          res.setHeader(
-            "Set-Cookie",
-            `userId=${userId}; path=/; httpOnly; expires=${getCookieExpires()}`
-          );
-        }
-        if (blogData) {
-          res.end(JSON.stringify(blogData));
-        }
-      });
-      return;
-    }
-
-    // const userData = handleUserRouter(req, res);
-    const userData = handleUserRouter(req, res);
-    if (userData) {
-      userData.then((userData) => {
-        if (needSetCookie) {
-          res.setHeader(
-            "Set-Cookie",
-            `userId=${userId}; path=/; httpOnly; expires=${getCookieExpires()}`
-          );
-        }
-        if (userData) {
-          res.end(JSON.stringify(userData));
-        }
-      });
-      return;
-    }
-    //404
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.write("404 Not Found");
-    res.end();
-  });
+      // const userData = handleUserRouter(req, res);
+      const userData = handleUserRouter(req, res);
+      if (userData) {
+        userData.then((userData) => {
+          if (needSetCookie) {
+            res.setHeader(
+              "Set-Cookie",
+              `userId=${userId}; path=/; httpOnly; expires=${getCookieExpires()}`
+            );
+          }
+          if (userData) {
+            res.end(JSON.stringify(userData));
+          }
+        });
+        return;
+      }
+      //404
+      res.writeHead(404, { "Content-Type": "text/plain" });
+      res.write("404 Not Found");
+      res.end();
+    });
 };
 module.exports = serverHandler;

@@ -8,6 +8,7 @@
  */
 const { login } = require("../controller/user");
 const { SuccessModal, ErrorModal } = require("../module/resModule");
+const { set } = require("../db/redis");
 
 const handleUserRouter = (req, response) => {
   const method = req.method;
@@ -20,14 +21,10 @@ const handleUserRouter = (req, response) => {
     if (data) {
       return data.then((res) => {
         if (res.username) {
-          // response.setHeader(
-          //   "Set-Cookie",
-          //   `username=${
-          //     res.username
-          //   }; path=/; httpOnly; expires=${getCookieExpires()}`
-          // );
           req.session.username = res.username;
           req.session.realName = res.realname;
+
+          set(req.sessionId, req.session);
           console.log("req session is", req.session);
           return new SuccessModal(res);
         }
