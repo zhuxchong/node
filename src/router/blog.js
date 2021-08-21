@@ -27,7 +27,14 @@ const handleBlogRouter = (req, res) => {
   const method = req.method;
   const id = req.query.id;
   if (method === "GET" && req.path === "/api/blog/list") {
-    const author = req.query.author || "";
+    let author = req.query.author || "";
+    if (req.query.isadmin) {
+      const checkIsNotLogin = loginCheck(req);
+      if (checkIsNotLogin) {
+        return checkIsNotLogin;
+      }
+      author = req.session.username;
+    }
     const kw = req.query.keyword || "";
     const data = getList(author, kw);
     return data.then((res) => {

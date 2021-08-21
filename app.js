@@ -60,17 +60,20 @@ const serverHandler = (req, res) => {
       return;
     }
     const [k, v] = item.split("=");
-    req.cookie[k] = v;
+    const _k = k.trim();
+    req.cookie[_k] = v;
   });
 
   let needSetCookie = false;
   let userId = req.cookie.userId;
+
   if (!userId) {
     needSetCookie = true;
     userId = `${Date.now()}_${Math.random()}`;
     set(userId, {});
   }
   req.sessionId = userId;
+
   get(req.sessionId)
     .then((sessionData) => {
       if (sessionData == null) {
@@ -78,7 +81,7 @@ const serverHandler = (req, res) => {
         req.session = {};
       }
       req.session = sessionData;
-      console.log(" req.session", req.session);
+
       return getPostData(req);
     })
     .then((postData) => {

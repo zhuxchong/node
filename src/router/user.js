@@ -25,7 +25,7 @@ const handleUserRouter = (req, response) => {
           req.session.realName = res.realname;
 
           set(req.sessionId, req.session);
-          console.log("req session is", req.session);
+
           return new SuccessModal(res);
         }
         return new ErrorModal("failed");
