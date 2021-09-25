@@ -6,6 +6,7 @@
  * @LastEditTime: 2021-08-07 23:35:46
  * @FilePath: /node/app.js
  */
+const { access } = require("./src/utils/log");
 
 const getCookieExpires = () => {
   const d = new Date();
@@ -46,6 +47,11 @@ const getPostData = (req) => {
 };
 
 const serverHandler = (req, res) => {
+  //记录access log
+  access(
+    `${req.method} - ${req.url} - ${req.headers["user-agent"]} - ${Date.now()}`
+  );
+
   res.setHeader("Content-Type", "application/json");
   const url = req.url;
   req.path = url.split("?")[0];

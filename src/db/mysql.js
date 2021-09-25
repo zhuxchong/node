@@ -3,7 +3,8 @@ const { MYSQL_CONF } = require("../conf/db");
 
 const con = mysql.createConnection(MYSQL_CONF);
 
-con.connect(() => {
+con.connect((e) => {
+  console.log(e);
   console.log("db connected");
 });
 
