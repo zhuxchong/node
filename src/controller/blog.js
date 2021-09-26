@@ -1,4 +1,5 @@
 const { exec } = require("../db/mysql");
+const xss = require("xss");
 
 const getList = (author, keyword) => {
   //mock data
@@ -25,7 +26,7 @@ const getDetail = (id) => {
 const newBlog = (data = {}) => {
   // console.log("input data", data);
   //title,content;
-  const title = data.title;
+  const title = xss(data.title);
   const content = data.content;
   const author = data.author;
   const createTime = Date.now();
