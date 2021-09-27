@@ -1,31 +1,41 @@
-/*
- * @Description:
- * @Author: Luke Z
- * @Date: 2021-08-07 12:59:36
- * @LastEditors: Luke Z
- * @LastEditTime: 2021-08-07 23:35:46
- * @FilePath: /node/app.js
- */
-const handleBlogRouter = require("./src/blog");
-const handleUserRouter = require("./src/user");
-const serverHandler = (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  const url = req.url;
-  req.path = url.split("?")[0];
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
 
-  const blogData = handleBlogRouter(req, res);
-  if (blogData) {
-    res.end(JSON.stringify(blogData));
-    return;
-  }
-  const userData = handleUserRouter(req, res);
-  if (userData) {
-    res.end(JSON.stringify(blogData));
-    return;
-  }
-  //404
-  res.writeHead(404, { "Content-Type": "text/plain" });
-  res.write("404 Not Found");
-  res.end();
-};
-module.exports = serverHandler;
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
+
+var app = express();
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
+});
+
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+
+module.exports = app;
