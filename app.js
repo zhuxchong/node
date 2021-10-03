@@ -1,31 +1,44 @@
-/*
- * @Description:
- * @Author: Luke Z
- * @Date: 2021-08-07 12:59:36
- * @LastEditors: Luke Z
- * @LastEditTime: 2021-08-07 23:35:46
- * @FilePath: /node/app.js
- */
-const handleBlogRouter = require("./src/blog");
-const handleUserRouter = require("./src/user");
-const serverHandler = (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  const url = req.url;
-  req.path = url.split("?")[0];
+const Koa = require('koa')
+const app = new Koa()
+const views = require('koa-views')
+const json = require('koa-json')
+const onerror = require('koa-onerror')
+const bodyparser = require('koa-bodyparser')
+const logger = require('koa-logger')
 
-  const blogData = handleBlogRouter(req, res);
-  if (blogData) {
-    res.end(JSON.stringify(blogData));
-    return;
-  }
-  const userData = handleUserRouter(req, res);
-  if (userData) {
-    res.end(JSON.stringify(blogData));
-    return;
-  }
-  //404
-  res.writeHead(404, { "Content-Type": "text/plain" });
-  res.write("404 Not Found");
-  res.end();
-};
-module.exports = serverHandler;
+const index = require('./routes/index')
+const users = require('./routes/users')
+
+// error handler
+onerror(app)
+
+// middlewares
+app.use(bodyparser({
+  enableTypes:['json', 'form', 'text']
+}))
+app.use(json())
+app.use(logger())
+app.use(require('koa-static')(__dirname + '/public'))
+
+app.use(views(__dirname + '/views', {
+  extension: 'pug'
+}))
+
+// logger
+app.use(async (ctx, next) => {
+  const start = new Date()
+  await next()
+  const ms = new Date() - start
+  console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
+})
+
+// routes
+app.use(index.routes(), index.allowedMethods())
+app.use(users.routes(), users.allowedMethods())
+
+// error-handling
+app.on('error', (err, ctx) => {
+  console.error('server error', err, ctx)
+});
+
+module.exports = app
