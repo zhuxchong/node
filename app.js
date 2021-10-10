@@ -8,6 +8,27 @@ const logger = require("koa-logger");
 const session = require("koa-generic-session");
 const redisStore = require("koa-redis");
 const { REDIS_CONF } = require("./conf/db");
+const fs = require("fs");
+const morgan = require("koa-morgan");
+
+const ENV = process.env.NODE_ENV;
+if (ENV !== "production") {
+  app.use(
+    morgan("dev", {
+      stream: process.stdout, //控制台
+    })
+  );
+} else {
+  const logFileName = path.join(__dirname, "logs", "access.log");
+  const writeStream = fs.createWriteStream(logFileName, {
+    flags: "a",
+  });
+  app.use(
+    morgan("combined", {
+      stream: writeStream,
+    })
+  );
+}
 
 //const index = require("./routes/index");
 const user = require("./routes/user");
